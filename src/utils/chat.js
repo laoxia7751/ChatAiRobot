@@ -31,8 +31,6 @@ class Chat {
       throw new Error('请求失败', chatCompletion.error.messages);
     }
 
-    console.log(123, chatCompletion);
-
     if (typeof cb === 'function') cb(chatCompletion.choices[0]);
     return chatCompletion.choices[0];
   }
