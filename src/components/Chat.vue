@@ -1,10 +1,10 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>OpenAI 聊天</h2>
+      <h3>OpenAI 聊天</h3>
     </div>
     <div class="chat-messages" ref="messages">
-      <div class="message" v-for="(msg, index) in messages" :key="index" :class="msg.type">
+      <div class="message" v-for="(msg, index) in messages" :key="index" :class="msg.role">
         <div class="message-content">{{ msg.content }}</div>
       </div>
     </div>
@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       inputMessage: '',
-      messages: [],
+      messages: [{"role":"user","content":"三国演义是谁写的"},{"role":"assistant","content":"三国演义是由明代小说家罗贯中创作的。"}],
     };
   },
   methods: {
@@ -33,7 +33,7 @@ export default {
       this.inputMessage = '';
 
       chat.send(this.messages, (data) => {
-        this.messages.push(data);
+        this.messages.push(data.message);
         this.$nextTick(() => {
           const messagesDiv = this.$refs.messages;
           messagesDiv.scrollTop = messagesDiv.scrollHeight;
@@ -44,22 +44,27 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$bg: #333;
+$c:#157518;
+$c1: #198f1d;
+$bc: rgba(255,255,255,0.1);
+
 .chat-container {
   width: 100%;
   height: 100%;
-  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: $bg;
 }
 
 .chat-header {
-  background-color: #4caf50;
+  background-color: $c;
   color: white;
-  padding: 15px;
+  padding: 12px;
   text-align: center;
 }
 
@@ -67,7 +72,8 @@ export default {
   flex: 1;
   padding: 10px;
   overflow-y: auto;
-  background-color: #f9f9f9;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .message {
@@ -89,25 +95,28 @@ export default {
 
 .chat-input-container {
   display: flex;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid $bc;
+  font-size: 16px;
 }
 
 .chat-input {
   flex: 1;
-  padding: 10px;
+  padding: 1em;
   border: none;
   border-radius: 0;
+  caret-color: $c1;
+  color:#222;
 }
 
 .send-button {
-  padding: 10px;
-  background-color: #4caf50;
+  padding: 1em 1em;
+  background-color: $c;
   color: white;
   border: none;
   cursor: pointer;
 }
 
 .send-button:hover {
-  background-color: #45a049;
+  background-color: $c1;
 }
 </style>
