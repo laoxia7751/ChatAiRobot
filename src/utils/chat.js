@@ -1,5 +1,6 @@
 // sk-Q3t227RThQ0w7DJyq5GTQOkP6wxZ4uK7cMvLENJbZQRpHUHq
 import OpenAI from 'openai';
+import mockData from './mockData';
 
 class Chat {
   constructor() {
@@ -22,22 +23,69 @@ class Chat {
     if (!this.client) {
       this.#init();
     }
-    try {
-      const stream = await this.client.beta.chat.completions.stream({
-        messages: messages,
-        model: 'gpt-3.5-turbo',
-        stream: true
-      });
-
-      for await (const chunk of stream) {
-        console.log("Chat ~ forawait ~ chunk", chunk)
-        const message = chunk.choices[0]?.delta?.content || ''
-        typeof cb === 'function' && cb(message);
+    //上一条数据，用于判断代码块结束
+    let preData = '';
+    let startCode = false;
+    let status = 0;
+    for(const chunk of mockData){
+      const msgData = chunk.choices[0]?.delta || {};
+      const { role, content } = msgData
+      preData = content;
+      role ==='assistant' && (status = 1)
+      // 判断代码块开始
+      if(content === '```' && !startCode) {
+        startCode = true;
       }
-      const chatCompletion = await stream.finalChatCompletion();
-    } catch (error) {
-      throw new Error('Stream encountered an error');
+      // 代码块结束
+      if(content === "`\n\n" && startCode && preData === "``"){
+        startCode = false;
+      }
+      // 返回结束
+      if(chunk.choices[0]?.finish_reason === 'stop'){
+        status = 0
+      }
+      cb({ content, startCode, status })
     }
+
+    // 最后应用层渲染的数据结构；
+    const mockMsg = [
+      {content:'文字内容',type:'text'},
+      {content:'console.log("hello")',type:'code'},
+      {content:'文字内容',type:'text'},
+    ]
+
+    // try {
+    //   const stream = await this.client.beta.chat.completions.stream({
+    //     messages: messages,
+    //     model: 'gpt-3.5-turbo',
+    //     stream: true
+    //   });
+    //   let msgCache = ''
+    //   for await (const chunk of stream) {
+    //     // 这里比较理想的状态是开一个定时器调用cb函数，当chunk.choices[0]?.delta?.role === 'assistant'时，说明流数据开始返回了，这时候开始存储返回的数据
+    //     // 然后每隔固定时间，将存储的数据返回并且清空，一直当chunk.choices[0]?.finish_reason为stop的时候，说明服务端已经推送完数据了，这时候则直接返回并且关闭定时器
+    //     console.log("Chat ~ forawait ~ chunk", chunk)
+    //     const { delta, finish_reason } = chunk.choices[0] || {}
+    //     if(delta.role === 'assistant'){
+    //       interval = setInterval(() => {
+
+    //       }, this.replyDurning)
+    //     }
+    //     if (delta && delta.content) {
+    //       msgCache += delta.content
+    //     }
+    //     if (finish_reason === 'stop') {
+    //       typeof cb === 'function' && cb(msgCache);
+    //       clearInterval(interval);
+    //       return;
+    //     }
+    //     const message = chunk.choices[0]?.delta?.content || ''
+    //     typeof cb === 'function' && cb(message);
+    //   }
+    //   const chatCompletion = await stream.finalChatCompletion();
+    // } catch (error) {
+    //   throw new Error('Stream encountered an error');
+    // }
   }
 
 
