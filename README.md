@@ -1,5 +1,17 @@
-# Vue 3 + Vite
+# openAi聊天工具
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+> 拿来学习练手的一个demo项目，所以没有做服务端，技术栈vite+vue3；
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+> apikey淘宝3毛钱买的，无所谓加密不加密了；
+
+✅ 支持上下文
+
+✅ 支持代码预览
+
+🟩 支持图片预览（暂不支持，不过很好实现【懒】）
+
+### 界面
+![exp](static/exp.png)
+
+### 演示
+![动画](static/demo.webp)
